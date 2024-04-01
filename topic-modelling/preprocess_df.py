@@ -2,10 +2,11 @@ import pandas as pd
 import nltk
 import re
 from spellchecker import SpellChecker
+from nltk.stem import WordNetLemmatizer
 
 stop_list = nltk.corpus.stopwords.words('english')
 # The following list is to further remove some frequent words in SGNews.
-stop_list += ['would', 'said', 'say', 'year', 'day', 'also', 'first', 'last', 'one', 'two', 'people', 'told', 'new', 'could', 'singapore', 'three', 'may', 'like', 'world', 'since']
+stop_list += ['get','time', 'really', 'go', 'back', 'try', 'ordered', 'order']
 
 import gensim
 
@@ -17,6 +18,7 @@ def load_corpus(df, column):
 def corpus2docs(corpus):
     # Initialize spell checker
     spell = SpellChecker()
+    lemmatizer = WordNetLemmatizer()
     # corpus is a list of documents.
     docs1 = [nltk.word_tokenize(doc) for doc in corpus]
     docs2 = [[w.lower() for w in doc] for doc in docs1]
@@ -29,7 +31,9 @@ def corpus2docs(corpus):
     #docs5 = [[spell.correction(w) if w not in spell else w for w in doc] for doc in docs3]
 
     docs4 = [[w for w in doc if w not in stop_list] for doc in docs3]
-    return docs4
+    # Add lemmatization
+    docs5 = [[lemmatizer.lemmatize(w) for w in doc] for doc in docs4]
+    return docs5
 
 def docs2vecs(docs, dictionary):
     # docs is a list of documents returned by corpus2docs.
