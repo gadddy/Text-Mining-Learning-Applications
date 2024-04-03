@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title> Topic Modelling </title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+</head>
+
+<body>
+    <!-- Use javascript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <div>
+        <h1>Topic Modelling</h1>
+        <!-- Center textbox -->
+        <div style="text-align: center;">
+            <textarea id="input" rows="10" cols="100"></textarea>
+            <br>
+            <button onclick="submit()">Submit</button>
+            <br><br>
+            <button id="output" style="display: none;"></button>
+            <!-- Center the button -->
+        </div>
+        <!-- Make button invisible -->
+
+        
+        <script>
+            function submit() {
+                // Get the input text
+                var input = document.getElementById("input").value;
+                // Call the model
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:5006/predict",
+                    data: JSON.stringify({"text": input}),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        // Output the sentiment results
+                        document.getElementById("output").innerHTML = data.toUpperCase();
+                    
+                        if (data.toLowerCase() == "positive") {
+                            document.getElementById("output").style.display = "inline-block";
+                            document.getElementById("output").style.color = "green";
+                        } else if (data.toLowerCase() == "negative") {
+                            document.getElementById("output").style.display = "inline-block";
+                            document.getElementById("output").style.color = "red";
+                        } else {
+                            document.getElementById("output").style.display = "inline-block";
+                            document.getElementById("output").style.color = "black";
+                        }
+                    }
+                });
+            }
+        </script>
+    </div>
+</body>
+
+</html>
