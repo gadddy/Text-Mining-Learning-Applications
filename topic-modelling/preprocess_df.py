@@ -6,9 +6,10 @@ from nltk.stem import WordNetLemmatizer
 
 stop_list = nltk.corpus.stopwords.words('english')
 # The following list is to further remove some frequent words in SGNews.
-stop_list += ['get','time', 'really', 'go', 'back', 'try', 'ordered', 'order']
-
-import gensim
+stop_list += ['get','time', 'really', 'go', 'back', 'try', 'ordered', 'order',"a", "an", "the", "in", "on", "at", "to", "for", "of", "with", "by",
+    "and", "or", "but", "so", "be", "have", "do", "would", "could", "like",
+    "got", "took", "said", "I", "me", "my", "you", "u", "your", "it", "its", "they",
+    "them", "their", "this", "that", "one", "also"]
 
 def load_corpus(df, column):
     # df is a DataFrame and column is the name of the column with text data.
@@ -40,3 +41,4 @@ def docs2vecs(docs, dictionary):
     # dictionary is a gensim.corpora.Dictionary object.
     vecs1 = [dictionary.doc2bow(doc) for doc in docs]
     return vecs1
+
