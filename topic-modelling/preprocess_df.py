@@ -5,7 +5,7 @@ from spellchecker import SpellChecker
 from nltk.stem import WordNetLemmatizer
 
 stop_list = nltk.corpus.stopwords.words('english')
-# The following list is to further remove some frequent words in SGNews.
+# The following list is to further remove some frequent words in the dataset.
 stop_list += ['get','time', 'really', 'go', 'back', 'try', 'ordered', 'order',"a", "an", "the", "in", "on", "at", "to", "for", "of", "with", "by",
     "and", "or", "but", "so", "be", "have", "do", "would", "could", "like",
     "got", "took", "said", "I", "me", "my", "you", "u", "your", "it", "its", "they",
