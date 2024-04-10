@@ -1,2 +1,6 @@
 data.csv
+*.csv
 *.pyc
+/textanalysis
+/topic-modelling/images
+/topic-modelling/demo/demo-venv

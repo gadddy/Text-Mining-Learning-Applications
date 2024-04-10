@@ -3,9 +3,16 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pickle
 import nltk
-from nltk.util import ngrams
 from nltk.stem import WordNetLemmatizer
 import re
+import pandas as pd
+
+# Load the CSV file into a DataFrame
+df = pd.read_csv('topic_summary.csv')
+
+# Convert the DataFrame to a dictionary for faster lookups
+topic_info = df.set_index('topic').T.to_dict()
+
 
 # Load the dictionary
 dictionary = pickle.load(open('lda_dictionary.pkl', 'rb'))
@@ -24,18 +31,30 @@ stop_list += ['get','time', 'really', 'go', 'back', 'try', 'ordered', 'order',"a
 @app.route('/predict', methods=['POST'])
 def predict():
     # Load the model
-    model = pickle.load(open('best_lda.pkl', 'rb'))
+    best_lda = pickle.load(open('best_lda.pkl', 'rb'))
+    
     # Get the data from the POST request.
     data = request.get_json()
-    # Make prediction using the model
-    input = preprocess_text(data['text'])
+    # get text from data
+    document = data['text']
+    
+    # Preprocess the document
+    preprocessed_doc = preprocess_text(document)
+
     # Convert the preprocessed document to BoW format
-    bow_doc = dictionary.doc2bow(input)
+    bow_doc = dictionary.doc2bow(preprocessed_doc)
 
     # Get the topic distribution for the BoW document
-    doc_topics = model[bow_doc]
+    doc_topics = best_lda[bow_doc]
 
-    return doc_topics
+    # Sort the topic distribution by probability in descending order
+    doc_topics_sorted = sorted(doc_topics, key=lambda x: x[1], reverse=True)
+
+
+    # Convert the list of tuples to a list of dictionaries
+    doc_topics_json = [{'id': id, 'probability': float(probability), 'top_ten_words': topic_info[id]['top_ten_words'], 'topic_summary': topic_info[id]['topic_summary']} for id, probability in doc_topics_sorted]
+
+    return jsonify(doc_topics_json)
 
 
 def preprocess_text(text):

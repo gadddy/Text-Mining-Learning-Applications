@@ -8,6 +8,12 @@
   <title> Topic Modelling </title>
   <meta content="" name="description">
   <meta content="" name="keywords">
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+  </style>
 </head>
 
 <body>
@@ -16,45 +22,44 @@
     <div>
         <h1>Topic Modelling</h1>
         <!-- Center textbox -->
-        <div style="text-align: center;">
-            <textarea id="input" rows="10" cols="100"></textarea>
-            <br>
-            <button onclick="submit()">Submit</button>
+        <div style="text-align: left;">
+            <div>
+                <textarea id="input" rows="10" cols="100"></textarea>
+                <button onclick="submit()">Submit</button>
+            </div>
             <br><br>
-            <button id="output" style="display: none;"></button>
-            <!-- Center the button -->
+            <div id="output"></div>
         </div>
-        <!-- Make button invisible -->
 
         
         <script>
             function submit() {
-                // Get the input text
-                var input = document.getElementById("input").value;
-                // Call the model
-                $.ajax({
-                    type: "POST",
-                    url: "http://localhost:5007/predict",
-                    data: JSON.stringify({"text": input}),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(data) {
-                        // Output the sentiment results
-                        document.getElementById("output").innerHTML = data.toUpperCase();
+            // Get the input text
+            var input = document.getElementById("input").value;
+            // Call the model
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:5007/predict",
+                data: JSON.stringify({"text": input}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    // Create the table header
+                    var output = "<table style='text-align:left'><tr><th>ID</th><th>Summary</th><th>Top Ten Words</th><th>Probability</th></tr>";
                     
-                        if (data.toLowerCase() == "positive") {
-                            document.getElementById("output").style.display = "inline-block";
-                            document.getElementById("output").style.color = "green";
-                        } else if (data.toLowerCase() == "negative") {
-                            document.getElementById("output").style.display = "inline-block";
-                            document.getElementById("output").style.color = "red";
-                        } else {
-                            document.getElementById("output").style.display = "inline-block";
-                            document.getElementById("output").style.color = "black";
-                        }
+                    // Add a row for each topic
+                    for (var i = 0; i < data.length; i++) {
+                        output += "<tr><td>" + data[i].id + "</td><td>" + data[i].topic_summary + "</td><td>" + data[i].top_ten_words + "</td><td>" + data[i].probability.toFixed(2) + "</td></tr>";
                     }
-                });
-            }
+                    
+                    // Close the table
+                    output += "</table>";
+                    
+                    // Display the table
+                    document.getElementById("output").innerHTML = output;
+                }
+            });
+        }
         </script>
     </div>
 </body>
